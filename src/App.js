@@ -39,7 +39,10 @@ class BooksApp extends React.Component {
     return (
       <div className="app">
         {this.state.showSearchPage ? (
-          <SearchBooks />
+          <SearchBooks
+            books={this.state.books}
+            onUpdateShelf={this.onUpdateShelf}
+          />
         ) : (
           <div className="list-books">
             <div className="list-books-title">

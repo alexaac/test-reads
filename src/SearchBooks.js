@@ -1,7 +1,34 @@
 import React, { Component } from 'react';
+import ListBooks from './ListBooks';
 
 class SearchBooks extends Component {
+  state = {
+    query: '',
+  };
+
+  updateQuery = (query) => {
+    this.setState(() => ({
+      query: query.trim(),
+    }));
+  };
+
   render() {
+    const { query } = this.state;
+    const { books, onUpdateShelf } = this.props;
+
+    console.log(books);
+
+    const filteredBooks =
+      query === ''
+        ? books
+        : books.filter(
+            (book) =>
+              book.title.toLowerCase().includes(query.toLowerCase()) ||
+              book.authors.filter((author) =>
+                author.toLowerCase().includes(query.toLowerCase())
+              ).length > 0
+          );
+
     return (
       <div className="search-books">
         <div className="search-books-bar">
@@ -12,19 +39,16 @@ class SearchBooks extends Component {
             Close
           </button>
           <div className="search-books-input-wrapper">
-            {/*
-                  NOTES: The search from BooksAPI is limited to a particular set of search terms.
-                  You can find these search terms here:
-                  https://github.com/udacity/reactnd-project-myreads-starter/blob/master/SEARCH_TERMS.md
-
-                  However, remember that the BooksAPI.search method DOES search by title or author. So, don't worry if
-                  you don't find a specific author or title. Every search is limited by search terms.
-                */}
-            <input type="text" placeholder="Search by title or author" />
+            {}
+            <input
+              type="text"
+              placeholder="Search by title or author"
+              onChange={(event) => this.updateQuery(event.target.value)}
+            />
           </div>
         </div>
         <div className="search-books-results">
-          <ol className="books-grid" />
+          <ListBooks books={filteredBooks} onUpdateShelf={onUpdateShelf} />
         </div>
       </div>
     );
