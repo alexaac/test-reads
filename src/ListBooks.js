@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 class ListBooks extends Component {
   render() {
-    const { books, onUpdateShelf } = this.props;
+    const { books, shelves, onUpdateShelf } = this.props;
 
     return (
       <div className="bookshelf-books">
@@ -29,12 +29,13 @@ class ListBooks extends Component {
                       <option value="move" disabled>
                         Move to...
                       </option>
-                      <option value="currentlyReading">
-                        Currently Reading
-                      </option>
-                      <option value="wantToRead">Want to Read</option>
-                      <option value="read">Read</option>
-                      <option value="none">None</option>
+                      {Object.keys(shelves).map((shelf) => (
+                        <option key={shelf} value={shelf}>
+                          {shelves[shelf]}
+                        </option>
+                      ))}
+                      {/* TODO: treat none shalf value */}
+                      <option value="none">None</option>{' '}
                     </select>
                   </div>
                 </div>

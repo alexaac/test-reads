@@ -10,7 +10,7 @@ const ListBooksContent = (props) => {
   };
 
   const shelves = books.reduce((accum, curr) => {
-    accum[curr.shelf] = 1;
+    accum[curr.shelf] = makeTitle(curr.shelf);
     return accum;
   }, {});
 
@@ -24,13 +24,14 @@ const ListBooksContent = (props) => {
 
           return (
             <div className="bookshelf" key={shelf}>
-              <h2 className="bookshelf-title">{makeTitle(shelf)}</h2>
-              <ListBooks books={filteredBooks} onUpdateShelf={onUpdateShelf} />
+              <h2 className="bookshelf-title">{shelves[shelf]}</h2>
+              <ListBooks books={filteredBooks} shelves={shelves} onUpdateShelf={onUpdateShelf} />
             </div>
           );
         })}
       </div>
     </div>
+    
   );
 };
 

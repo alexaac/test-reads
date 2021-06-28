@@ -16,8 +16,6 @@ class SearchBooks extends Component {
     const { query } = this.state;
     const { books, onUpdateShelf } = this.props;
 
-    console.log(books);
-
     const filteredBooks =
       query === ''
         ? books
