@@ -12,10 +12,11 @@ const headers = {
   Authorization: token,
 };
 
-export const get = (bookId) =>
-  fetch(`${api}/books/${bookId}`, { headers })
+export const get = (bookId) => {
+  return fetch(`${api}/books/${bookId}`, { headers })
     .then((res) => res.json())
     .then((data) => data.book);
+};
 
 export const getAll = () =>
   fetch(`${api}/books`, { headers })

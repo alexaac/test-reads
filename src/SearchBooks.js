@@ -1,39 +1,39 @@
 import React, { Component } from 'react';
+import * as BooksAPI from './BooksAPI';
 import ListBooks from './ListBooks';
 
 class SearchBooks extends Component {
   state = {
-    query: '',
+    books: [],
   };
 
-  updateQuery = (query) => {
-    this.setState(() => ({
-      query: query.trim(),
-    }));
+  gotoHomepage = () => {
+    this.props.history.push('/');
   };
+
+  updateQuery = (query) =>
+    BooksAPI.search(query.trim()).then((books) => {
+      if (books && books.error) {
+        // empty search result
+        books = [];
+      }
+
+      this.setState(() => ({
+        books,
+      }));
+    });
+
+  componentDidMount() {
+    this.updateQuery('');
+  }
 
   render() {
-    const { query } = this.state;
-    const { books, onUpdateShelf } = this.props;
-
-    const filteredBooks =
-      query === ''
-        ? books
-        : books.filter(
-            (book) =>
-              book.title.toLowerCase().includes(query.toLowerCase()) ||
-              book.authors.filter((author) =>
-                author.toLowerCase().includes(query.toLowerCase())
-              ).length > 0
-          );
+    const { onUpdateShelf, getShelves } = this.props;
 
     return (
       <div className="search-books">
         <div className="search-books-bar">
-          <button
-            className="close-search"
-            onClick={() => this.setState({ showSearchPage: false })}
-          >
+          <button className="go-home" onClick={this.gotoHomepage}>
             Close
           </button>
           <div className="search-books-input-wrapper">
@@ -46,7 +46,11 @@ class SearchBooks extends Component {
           </div>
         </div>
         <div className="search-books-results">
-          <ListBooks books={filteredBooks} onUpdateShelf={onUpdateShelf} />
+          <ListBooks
+            books={this.state.books}
+            shelves={getShelves(this.state.books)}
+            onUpdateShelf={onUpdateShelf}
+          />
         </div>
       </div>
     );

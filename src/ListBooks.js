@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 
 class ListBooks extends Component {
   render() {
@@ -7,43 +8,49 @@ class ListBooks extends Component {
     return (
       <div className="bookshelf-books">
         <ol className="books-grid">
-          {books.map((book) => (
-            <li key={book.id}>
-              <div className="book">
-                <div className="book-top">
-                  <div
-                    className="book-cover"
-                    style={{
-                      width: 128,
-                      height: 193,
-                      backgroundImage: `url(${book.imageLinks.thumbnail})`,
-                    }}
-                  />
-                  <div className="book-shelf-changer">
-                    <select
-                      value={book.shelf}
-                      onChange={(event) =>
-                        onUpdateShelf(book, event.target.value)
-                      }
-                    >
-                      <option value="move" disabled>
-                        Move to...
-                      </option>
-                      {Object.keys(shelves).map((shelf) => (
-                        <option key={shelf} value={shelf}>
-                          {shelves[shelf]}
+          {books &&
+            books.map((book) => (
+              <li key={book.id}>
+                <div className="book">
+                  <div className="book-top">
+                    <Link to={`/books/${book.id}`}>
+                      <div
+                        className="book-cover"
+                        style={{
+                          width: 128,
+                          height: 193,
+                          backgroundImage: `url(${book.imageLinks &&
+                            book.imageLinks.thumbnail})`,
+                        }}
+                      />
+                    </Link>
+                    <div className="book-shelf-changer">
+                      <select
+                        value={book.shelf || 'undefined'}
+                        onChange={(event) =>
+                          event.target.value !== 'none'
+                            ? onUpdateShelf(book, event.target.value)
+                            : {}
+                        }
+                      >
+                        <option value="move" disabled>
+                          Move to...
                         </option>
-                      ))}
-                      {/* TODO: treat none shalf value */}
-                      <option value="none">None</option>{' '}
-                    </select>
+                        {Object.keys(shelves).map((shelf) => (
+                          <option key={shelf} value={shelf}>
+                            {shelves[shelf]}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="book-title">{book.title}</div>
+                  <div className="book-authors">
+                    {book.authors && book.authors.join(',')}
                   </div>
                 </div>
-                <div className="book-title">{book.title}</div>
-                <div className="book-authors">{book.authors.join(',')}</div>
-              </div>
-            </li>
-          ))}
+              </li>
+            ))}
         </ol>
       </div>
     );
