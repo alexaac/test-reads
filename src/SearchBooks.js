@@ -1,72 +1,91 @@
-import React, { Component } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import * as BooksAPI from './BooksAPI';
 import ListBooks from './ListBooks';
+import debounce from 'lodash.debounce';
 
-class SearchBooks extends Component {
-  state = {
-    rawBooks: [],
-    query: '',
+const SearchBooks = (props) => {
+  const [rawBooks, setRawBooks] = useState([]);
+  const [query, setQuery] = useState('');
+
+  const gotoHomepage = () => {
+    props.history.push('/');
   };
 
-  gotoHomepage = () => {
-    this.props.history.push('/');
+  const updateQuery = useCallback(
+    (query, books) =>
+      BooksAPI.search(query.trim()).then((rawBooks) => {
+        let updatedBooks = [];
+
+        if (rawBooks !== undefined && !rawBooks.error) {
+          // not empty search result
+
+          updatedBooks = rawBooks.map((rawBook) => {
+            const filteredBooks = books.filter(
+              (book) => book.id === rawBook.id
+            );
+            rawBook.shelf = filteredBooks[0] ? filteredBooks[0].shelf : 'none';
+
+            return rawBook;
+          });
+        }
+        setRawBooks(updatedBooks);
+        setQuery(query);
+      }),
+    []
+  );
+
+  const handleChange = (query, books) => {
+    setQuery(query);
+    debouncedCallback(query, books);
   };
 
-  updateQuery = (query, books) =>
-    BooksAPI.search(query.trim()).then((rawBooks) => {
-      let updatedBooks = [];
+  const debouncedCallback = useMemo(
+    () =>
+      debounce((query, books) => {
+        updateQuery(query, books);
+      }, 500),
+    [updateQuery]
+  );
 
-      if (rawBooks !== undefined && !rawBooks.error) {
-        // not empty search result
+  const updateShelf = async (book, shelf) => {
+    await props.onUpdateShelf(book, shelf);
 
-        updatedBooks = rawBooks.map((rawBook) => {
-          const filteredBooks = books.filter((book) => book.id === rawBook.id);
-          rawBook.shelf = filteredBooks[0] ? filteredBooks[0].shelf : 'none';
-
-          return rawBook;
-        });
-      }
-
-      this.setState(() => ({
-        rawBooks: updatedBooks,
-        query,
-      }));
-    });
-
-  updateShelf = async (book, shelf) => {
-    await this.props.onUpdateShelf(book, shelf);
-
-    this.updateQuery(this.state.query, this.props.books);
+    updateQuery(query, props.books);
   };
 
-  render() {
-    return (
-      <div className="search-books">
-        <div className="search-books-bar">
-          <button className="go-home" onClick={this.gotoHomepage}>
-            Close
-          </button>
-          <div className="search-books-input-wrapper">
-            {}
-            <input
-              type="text"
-              placeholder="Search by title or author"
-              onChange={(event) =>
-                this.updateQuery(event.target.value, this.props.books)
-              }
-            />
-          </div>
-        </div>
-        <div className="search-books-results">
-          <ListBooks
-            books={this.state.rawBooks}
-            shelves={this.props.shelves}
-            onUpdateShelf={this.updateShelf}
+  // Stop the invocation of the debounced function
+  // after unmounting
+  useEffect(() => {
+    return () => {
+      debouncedCallback.cancel();
+      setQuery('');
+    };
+  }, [debouncedCallback]);
+
+  return (
+    <div className="search-books">
+      <div className="search-books-bar">
+        <button className="go-home" onClick={gotoHomepage}>
+          Close
+        </button>
+        <div className="search-books-input-wrapper">
+          {}
+          <input
+            type="text"
+            placeholder="Search by title or author"
+            onChange={(event) => handleChange(event.target.value, props.books)}
           />
         </div>
       </div>
-    );
-  }
-}
+      <div className="search-books-results">
+        <ListBooks
+          books={rawBooks}
+          shelves={props.shelves}
+          onUpdateShelf={updateShelf}
+        />
+      </div>
+    </div>
+  );
+};
 
 export default SearchBooks;
