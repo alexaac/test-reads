@@ -49,7 +49,7 @@ class ListBook extends Component {
                 </Link>
                 <div className="book-shelf-changer">
                   <select
-                    value={book ? book.shelf : 'undefined'}
+                    value={book ? book.shelf : 'none'}
                     onChange={(event) =>
                       event.target.value !== 'none'
                         ? onUpdateShelf(book, event.target.value)

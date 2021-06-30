@@ -8,7 +8,7 @@ const ListBooksContent = (props) => {
     <div className="list-books-content">
       <div>
         {Object.keys(shelves).map((shelf) => {
-          if (shelf === 'undefined') return '';
+          if (shelf === 'none') return '';
 
           const filteredBooks = books.filter(
             (book) => book.shelf.toLowerCase() === shelf.toLowerCase()

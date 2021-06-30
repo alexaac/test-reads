@@ -4,32 +4,42 @@ import ListBooks from './ListBooks';
 
 class SearchBooks extends Component {
   state = {
-    books: [],
+    rawBooks: [],
+    query: '',
   };
 
   gotoHomepage = () => {
     this.props.history.push('/');
   };
 
-  updateQuery = (query) =>
-    BooksAPI.search(query.trim()).then((books) => {
-      if (books && books.error) {
-        // empty search result
-        books = [];
+  updateQuery = (query, books) =>
+    BooksAPI.search(query.trim()).then((rawBooks) => {
+      let updatedBooks = [];
+
+      if (rawBooks !== undefined && !rawBooks.error) {
+        // not empty search result
+
+        updatedBooks = rawBooks.map((rawBook) => {
+          const filteredBooks = books.filter((book) => book.id === rawBook.id);
+          rawBook.shelf = filteredBooks[0] ? filteredBooks[0].shelf : 'none';
+
+          return rawBook;
+        });
       }
 
       this.setState(() => ({
-        books,
+        rawBooks: updatedBooks,
+        query,
       }));
     });
 
-  componentDidMount() {
-    this.updateQuery('');
-  }
+  updateShelf = async (book, shelf) => {
+    await this.props.onUpdateShelf(book, shelf);
+
+    this.updateQuery(this.state.query, this.props.books);
+  };
 
   render() {
-    const { onUpdateShelf, getShelves } = this.props;
-
     return (
       <div className="search-books">
         <div className="search-books-bar">
@@ -41,15 +51,17 @@ class SearchBooks extends Component {
             <input
               type="text"
               placeholder="Search by title or author"
-              onChange={(event) => this.updateQuery(event.target.value)}
+              onChange={(event) =>
+                this.updateQuery(event.target.value, this.props.books)
+              }
             />
           </div>
         </div>
         <div className="search-books-results">
           <ListBooks
-            books={this.state.books}
-            shelves={getShelves(this.state.books)}
-            onUpdateShelf={onUpdateShelf}
+            books={this.state.rawBooks}
+            shelves={this.props.shelves}
+            onUpdateShelf={this.updateShelf}
           />
         </div>
       </div>

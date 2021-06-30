@@ -9,6 +9,12 @@ import AddBookButton from './AddBookButton';
 class BooksApp extends React.Component {
   state = {
     books: [],
+    shelves: {
+      currentlyReading: 'Currently Reading',
+      wantToRead: 'Want To Read',
+      read: 'Read',
+      none: 'None',
+    },
   };
 
   // Get books from API and refresh state
@@ -28,35 +34,12 @@ class BooksApp extends React.Component {
     BooksAPI.update(book, shelf).then(() => this.reloadBooks());
 
   makeTitle = (shelf) => {
-    if (shelf === 'undefined') return 'None';
+    if (shelf === 'none') return 'None';
     const shelfTitle = shelf.split(/(?=[A-Z])/).join(' ');
     return shelfTitle.charAt(0).toUpperCase() + shelfTitle.slice(1);
   };
 
-  getShelves = (books) => {
-    let shelves = {
-      currentlyReading: 'Currently Reading',
-      wantToRead: 'Want To Read',
-      read: 'Read',
-    };
-
-    shelves =
-      (books &&
-        books.reduce((accum, curr) => {
-          accum[curr.shelf] = curr.shelf && this.makeTitle(curr.shelf);
-          return accum;
-        }, shelves)) ||
-      shelves;
-
-    shelves.undefined = 'None';
-
-    return shelves;
-  };
-
-
   render() {
-    const books = this.state.books;
-
     return (
       <div className="app">
         <Route
@@ -68,8 +51,8 @@ class BooksApp extends React.Component {
                 <h1>MyReads</h1>
               </div>
               <ListBooksContent
-                books={books}
-                shelves={this.getShelves(books)}
+                books={this.state.books}
+                shelves={this.state.shelves}
                 onUpdateShelf={this.onUpdateShelf}
               />
               <AddBookButton history={history} />
@@ -80,8 +63,9 @@ class BooksApp extends React.Component {
           path="/search"
           render={({ history }) => (
             <SearchBooks
+              books={this.state.books}
+              shelves={this.state.shelves}
               onUpdateShelf={this.onUpdateShelf}
-              getShelves={this.getShelves}
               history={history}
             />
           )}
@@ -90,7 +74,7 @@ class BooksApp extends React.Component {
           path="/books/:bookId"
           render={({ history, match }) => (
             <ListBook
-              shelves={this.getShelves(books)}
+              shelves={this.state.shelves}
               onUpdateShelf={this.onUpdateShelf}
               history={history}
             />
