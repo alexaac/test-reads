@@ -4,7 +4,7 @@
 
 ### Project Title
 
-MyReads 
+MyReads
 
 ### Description
 
@@ -18,8 +18,11 @@ A bookshelf app that allows you to select and categorize books you have read, ar
 4. start the project on localhost:3000 - `npm start`
 
 ## Testing
-* test - `npm test`
+
+- test - `npm test`
+
 ## Files
+
 ```bash
 .
 ├── package.json # npm package manager file
@@ -44,52 +47,53 @@ A bookshelf app that allows you to select and categorize books you have read, ar
     ├── ListBook.js # Component to list book by bookId
     ├── ListBooksContent.js # Component to list all books content on the main page
     ├── ListBooks.js # Component to list books by category
-    └── SearchBooks.js # Component to search books by title or author
+    ├── reportWebVitals.js
+    ├── SearchBooks.js # Component to search books by title or author
+    └── setupTests.js
 ```
-
 
 ## Backend Server
 
 To simplify your development process, we've provided a backend server for you to develop against. The provided file [`BooksAPI.js`](src/BooksAPI.js) contains the methods you will need to perform necessary operations on the backend:
 
-* [`getAll`](#getall)
-* [`update`](#update)
-* [`search`](#search)
+- [`getAll`](#getall)
+- [`update`](#update)
+- [`search`](#search)
 
 ### `getAll`
 
 Method Signature:
 
 ```js
-getAll()
+getAll();
 ```
 
-* Returns a Promise which resolves to a JSON object containing a collection of book objects.
-* This collection represents the books currently in the bookshelves in your app.
+- Returns a Promise which resolves to a JSON object containing a collection of book objects.
+- This collection represents the books currently in the bookshelves in your app.
 
 ### `update`
 
 Method Signature:
 
 ```js
-update(book, shelf)
+update(book, shelf);
 ```
 
-* book: `<Object>` containing at minimum an `id` attribute
-* shelf: `<String>` contains one of ["wantToRead", "currentlyReading", "read"]  
-* Returns a Promise which resolves to a JSON object containing the response data of the POST request
+- book: `<Object>` containing at minimum an `id` attribute
+- shelf: `<String>` contains one of ["wantToRead", "currentlyReading", "read"]
+- Returns a Promise which resolves to a JSON object containing the response data of the POST request
 
 ### `search`
 
 Method Signature:
 
 ```js
-search(query)
+search(query);
 ```
 
-* query: `<String>`
-* Returns a Promise which resolves to a JSON object containing a collection of a maximum of 20 book objects.
-* These books do not know which shelf they are on. They are raw results only. You'll need to make sure that books have the correct state while on the search page.
+- query: `<String>`
+- Returns a Promise which resolves to a JSON object containing a collection of a maximum of 20 book objects.
+- These books do not know which shelf they are on. They are raw results only. You'll need to make sure that books have the correct state while on the search page.
 
 ### Credits
 
